@@ -1,0 +1,10 @@
+[package]
+name = "backup_my_dev_stuff"
+version = "0.1.0"
+authors = ["truelossless <esteban.gressard@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+gitignore = "1.0.7"
+zip = "0.5.8"
+rayon = "1.4.1"
