@@ -74,37 +74,37 @@ fn smart_zip(
 
     // get the path iterator
     // CAVEAT: this doesn't take into account upper gitignores
-    let (mut path_iter, is_recursive) = match gitignore::File::new(&path.canonicalize().unwrap().join(".gitignore"))
-    {
-        // follow the gitignore file first, if it exists
-                Ok(gitignore) => {
-            println!(".gitignore file detected");
-            (gitignore.included_files()?, true)
-        }
-        // else try to infer ourselves the rules
-        Err(_) => {
-            // Rust project
-            if path.join("cargo.toml").is_file() {
-                // println!("Rust project detected, excluding target/");
-                excludes.push(path.join("target"));
-
-            // Node project
-            } else if path.join("node_modules").is_dir() {
-                // println!("NodeJS project detected, excluding node_modules/");
-                excludes.push(path.join("node_modules"));
+    let (mut path_iter, is_recursive) =
+        match gitignore::File::new(&path.canonicalize().unwrap().join(".gitignore")) {
+            // follow the gitignore file first, if it exists
+            Ok(gitignore) => {
+                println!(".gitignore file detected");
+                (gitignore.included_files()?, true)
             }
+            // else try to infer ourselves the rules
+            Err(_) => {
+                // Rust project
+                if path.join("cargo.toml").is_file() {
+                    println!("Rust project detected, excluding target/");
+                    excludes.push(path.join("target"));
 
-            let iter = fs::read_dir(path)?
-                .map(|res| res.map(|e| e.path()))
-                .filter(|path| {
-                    !excludes
-                        .iter()
-                        .any(|exclude| path.as_ref().unwrap() == exclude)
-                })
-                .collect::<Result<Vec<_>, io::Error>>()?;
-            (iter, false)
-    }
-};
+                // Node project
+                } else if path.join("node_modules").is_dir() {
+                    println!("NodeJS project detected, excluding node_modules/");
+                    excludes.push(path.join("node_modules"));
+                }
+
+                let iter = fs::read_dir(path)?
+                    .map(|res| res.map(|e| e.path()))
+                    .filter(|path| {
+                        !excludes
+                            .iter()
+                            .any(|exclude| path.as_ref().unwrap() == exclude)
+                    })
+                    .collect::<Result<Vec<_>, io::Error>>()?;
+                (iter, false)
+            }
+        };
 
     // recursively explore other folders
     path_iter
@@ -122,7 +122,7 @@ fn smart_zip(
                 writer_lock.start_file_from_path(&subdir_path, options)?;
                 writer_lock.write_all(&buf)?;
 
-            // if our iter doesn't take into account subfolder do it ourselves
+            // if our iter doesn't take into account subfolders do it ourselves
             } else if !is_recursive {
                 smart_zip(&subdir_path, writer.clone())?;
             }
