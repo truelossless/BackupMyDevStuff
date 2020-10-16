@@ -1,12 +1,11 @@
 # BackupMyDevStuff
 
-Zip your dev folder for easy backups !  
+Zip easely your mighty dev folder without including build artifacts ! 
 
 ## Usage
 ```
 backupmydevstuff [DIR_PATH] [ARCHIVE_PATH]
 ```
-
 
 ## Features
 - uses multiple threads
